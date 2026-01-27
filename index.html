@@ -3,591 +3,271 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Generador de enlaces LIQ</title>
+  <title>Generador de bloques LIQ</title>
+
   <style>
     :root{
       --bg:#0b1020;
       --card:#121a33;
-      --card2:#0f1730;
       --text:#e9ecf7;
       --muted:#aab2d5;
       --line:rgba(255,255,255,.12);
       --ok:#2ee59d;
-      --warn:#ffcc66;
       --bad:#ff6b6b;
       --btn:#2a3cff;
-      --btn2:#1b254d;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 600px at 20% 0%, #1a2a6c44, transparent),
-                  radial-gradient(900px 500px at 90% 20%, #2a3cff33, transparent),
-                  var(--bg);
+      font-family: system-ui, Arial, sans-serif;
+      background: var(--bg);
       color:var(--text);
     }
-    .wrap{max-width:1100px;margin:0 auto;padding:28px 18px 40px}
-    header{
-      display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
-      margin-bottom:16px;
-    }
-    h1{font-size:22px;margin:0}
-    .sub{color:var(--muted);margin:6px 0 0 0;font-size:14px;line-height:1.35}
-    .grid{display:grid;grid-template-columns: 1.1fr .9fr; gap:14px; align-items:start}
-    @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
+    .wrap{max-width:900px;margin:auto;padding:28px}
+    h1{margin:0 0 8px}
+    .sub{color:var(--muted);font-size:14px;margin-bottom:18px}
 
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border:1px solid var(--line);
       border-radius:16px;
       padding:16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border-radius:999px;border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      color:var(--muted);font-size:12px
-    }
-    .pill b{color:var(--text);font-weight:600}
-    .badge{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:8px 12px;border-radius:999px;font-size:13px;font-weight:700;
-      border:1px solid var(--line); background: rgba(255,255,255,.04);
-    }
-    .badge.ok{color:var(--ok)}
-    .badge.warn{color:var(--warn)}
-    .badge.bad{color:var(--bad)}
-    .badge span.dot{
-      width:9px;height:9px;border-radius:50%;
-      background: currentColor; display:inline-block;
-      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
+      margin-bottom:16px;
     }
 
-    label{display:block;color:var(--muted);font-size:13px;margin:12px 0 8px}
     textarea{
-      width:100%;min-height:110px;resize:vertical;
-      border-radius:14px;border:1px solid var(--line);
-      background: rgba(0,0,0,.18);
-      padding:12px 12px;
-      color:var(--text); font-size:14px; line-height:1.35;
-      outline:none;
+      width:100%;
+      min-height:120px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.25);
+      color:var(--text);
+      padding:12px;
+      resize:vertical;
+      font-family: ui-monospace, monospace;
+      font-size:13px;
     }
-    textarea:focus{border-color: rgba(46,229,157,.5); box-shadow: 0 0 0 4px rgba(46,229,157,.08)}
-    .btn{
+
+    button{
+      padding:10px 14px;
+      border-radius:12px;
       border:1px solid var(--line);
       background: linear-gradient(180deg, rgba(42,60,255,.95), rgba(30,44,210,.95));
-      color:white; font-weight:700;
-      padding:10px 12px;border-radius:12px;
+      color:white;
+      font-weight:700;
       cursor:pointer;
     }
-    .btn:active{transform: translateY(1px)}
-    .btn.secondary{
-      background: rgba(255,255,255,.06);
-      color: var(--text);
+
+    .btn-secondary{
+      background: rgba(255,255,255,.08);
     }
-    .btn.ghost{
-      background: transparent;
-      color: var(--muted);
-    }
-    .btn.small{padding:8px 10px;border-radius:10px;font-weight:700;font-size:13px}
-    .hint{
-      color:var(--muted);
-      font-size:13px; line-height:1.45;
-      margin:10px 0 0 0;
-    }
-    .output{
-      background: rgba(0,0,0,.22);
-      border:1px dashed rgba(255,255,255,.18);
-      padding:12px;border-radius:14px;
-      margin-top:12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:13px;
-      word-break: break-all;
-      white-space: pre-wrap;
-    }
-    .kv{
-      display:grid;
-      grid-template-columns: 140px 1fr;
-      gap:10px;
-      margin-top:12px;
-      padding-top:12px;
-      border-top:1px solid var(--line);
-    }
-    .k{color:var(--muted);font-size:13px}
-    .v{color:var(--text);font-size:13px}
-    .switch{
-      display:flex;align-items:center;gap:10px;
-      background: rgba(255,255,255,.04);
-      border:1px solid var(--line);
-      padding:10px 12px;border-radius:12px;
-      color: var(--muted); font-size:13px;
-    }
-    .switch input{transform: scale(1.15)}
-    .list{
-      display:flex;flex-direction:column;gap:10px;margin-top:12px;
-      max-height: 520px; overflow:auto; padding-right:6px;
-    }
-    .item{
-      background: rgba(0,0,0,.18);
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:12px;
-    }
-    .itemTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-    .mini{color:var(--muted);font-size:12px}
-    .code{
-      margin-top:8px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size:12.5px; word-break: break-all; white-space: pre-wrap;
-      color: rgba(233,236,247,.95);
-      background: rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:12px;padding:10px;
-    }
-    .toast{
-      position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
-      background: rgba(18,26,51,.95);
-      border:1px solid var(--line);
-      color: var(--text);
-      padding:10px 12px;border-radius:999px;
-      font-size:13px;
-      opacity:0; pointer-events:none;
-      transition: opacity .2s ease, transform .2s ease;
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
-    }
-    .toast.show{opacity:1; transform:translateX(-50%) translateY(-2px)}
-    /* PREVIEW */
-    .previewWrap{
-      margin-top:12px;
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:14px;
-      overflow:hidden;
-      background: rgba(0,0,0,.18);
-    }
-    .previewTop{
+
+    .row{
       display:flex;
-      align-items:center;
-      justify-content:space-between;
       gap:10px;
       flex-wrap:wrap;
-      padding:10px 12px;
-      border-bottom:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.03);
+      margin-top:10px;
     }
-    .previewTitle{
-      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-      color: var(--muted); font-size:13px;
+
+    .badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:10px;
     }
-    .status{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      font-size:12px;color:var(--muted);
+    .ok{color:var(--ok)}
+    .bad{color:var(--bad)}
+
+    .hint{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:8px;
     }
-    .status.ok{color:var(--ok)}
-    .status.warn{color:var(--warn)}
-    .status.bad{color:var(--bad)}
-    iframe.preview{
+
+    iframe{
       width:100%;
       height:520px;
       border:0;
-      background: transparent;
+      margin-top:12px;
+      border-radius:12px;
+      background:#000;
     }
+
+    .toast{
+      position:fixed;
+      bottom:20px;
+      left:50%;
+      transform:translateX(-50%);
+      background:#121a33;
+      border:1px solid var(--line);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:13px;
+      opacity:0;
+      pointer-events:none;
+      transition:.2s;
+    }
+    .toast.show{opacity:1}
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>Generador de enlaces para LIQ</h1>
-        <p class="sub">
-          Pega el link original (Google Forms / Presentación / PDF de Drive) y obtén el link correcto.
-          Te dice <b>qué tipo es</b> y guarda un <b>historial</b> por si haces muchos.
-        </p>
-      </div>
-      <div class="row">
-        <div class="pill"><b>Detecta</b> Forms • Slides • PDF</div>
-        <div class="pill"><b>Acción</b> Generar • Copiar • Historial • Preview</div>
-      </div>
-    </header>
+<div class="wrap">
 
-    <div class="grid">
-      <!-- LEFT -->
-      <section class="card">
-        <div class="row" style="justify-content:space-between">
-          <div id="tipoBadge" class="badge warn"><span class="dot"></span> Sin detectar</div>
-          <div class="row">
-            <button class="btn ghost small" id="btnEjemplos">Pegar ejemplo</button>
-            <button class="btn secondary small" id="btnLimpiar">Limpiar</button>
-          </div>
-        </div>
+  <h1>Generador de bloques para LIQ</h1>
+  <div class="sub">
+    Pega el link original de Google y obtén el <b>bloque completo</b> listo para pegar en
+    <b>LIQ → Editor WP → Código</b>.
+  </div>
 
-        <label for="in">1) Pega aquí el link original (tal cual lo da Google)</label>
-        <textarea id="in" placeholder="Ej: https://docs.google.com/forms/d/e/.../viewform?usp=header"></textarea>
+  <!-- INPUT -->
+  <div class="card">
+    <div id="badge" class="badge">Sin detectar</div>
 
-        <div class="row" style="margin-top:10px; justify-content:space-between; gap:12px">
-          <button class="btn" id="btnGenerar">Generar link LIQ</button>
+    <label>Link original</label>
+    <textarea id="input" placeholder="Pega aquí el link original..."></textarea>
 
-          <div class="switch" title="Si vas a pegar el link dentro de un iframe en modo HTML, es común convertir & a &amp;">
-            <input type="checkbox" id="amp" />
-            <div>
-              <div style="color:var(--text);font-weight:700;font-size:13px;margin-bottom:2px">Modo HTML (&amp;)</div>
-              <div style="font-size:12px">Convierte <b>&</b> → <b>&amp;</b> en el resultado</div>
-            </div>
-          </div>
-        </div>
+    <div class="row">
+      <button onclick="generar()">Generar bloque</button>
+      <button class="btn-secondary" onclick="limpiar()">Limpiar</button>
+    </div>
 
-        <div class="kv">
-          <div class="k">¿Qué es?</div>
-          <div class="v" id="desc">Pega un link para detectarlo.</div>
-
-          <div class="k">Link LIQ</div>
-          <div class="v">
-            <div class="output" id="out">—</div>
-            <div class="row" style="margin-top:10px">
-              <button class="btn secondary small" id="btnCopiar">Copiar resultado</button>
-              <button class="btn secondary small" id="btnCopiarIframe">Copiar iframe</button>
-              <button class="btn secondary small" id="btnAbrir">Abrir preview</button>
-            </div>
-
-            <!-- PREVIEW SECTION -->
-            <div class="previewWrap" id="previewWrap" style="display:none;">
-              <div class="previewTop">
-                <div class="previewTitle">
-                  <b style="color:var(--text)">Preview</b>
-                  <span class="mini">Así se verá al incrustar (embed).</span>
-                </div>
-                <div class="row">
-                  <span class="status warn" id="pstatus">Cargando…</span>
-                  <button class="btn ghost small" id="btnRecargar">Recargar</button>
-                  <button class="btn ghost small" id="btnCerrarPreview">Cerrar</button>
-                </div>
-              </div>
-              <iframe class="preview" id="preview" src="" allowfullscreen></iframe>
-            </div>
-
-            <p class="hint" id="nota">
-              Tip: Si no se detecta, revisa que sea uno de estos formatos: <b>forms</b> (viewform), <b>presentation</b> (d/ID), <b>drive file</b> (file/d/ID).
-              <br>Si la preview dice “Solicitar acceso”, revisa permisos: <b>Cualquiera con el enlace</b> + <b>Lector</b>.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- RIGHT -->
-      <aside class="card">
-        <div class="row" style="justify-content:space-between">
-          <div>
-            <div style="font-weight:900;font-size:14px">Historial</div>
-            <div class="mini">Se guarda en tu navegador (solo en este equipo).</div>
-          </div>
-          <div class="row">
-            <button class="btn secondary small" id="btnBorrarHist">Borrar historial</button>
-          </div>
-        </div>
-
-        <div class="list" id="hist"></div>
-        <div class="hint" style="margin-top:10px">
-          Puedes hacer clic en un elemento del historial para volver a copiarlo.
-        </div>
-      </aside>
+    <div class="hint">
+      Archivo debe estar como <b>Cualquiera con el enlace → Lector</b>.
     </div>
   </div>
 
-  <div class="toast" id="toast">Copiado</div>
+  <!-- OUTPUT -->
+  <div class="card">
+    <label><b>Código listo para pegar</b></label>
+    <textarea id="output" readonly>—</textarea>
 
-  <script>
-    const $ = (id)=>document.getElementById(id);
+    <div class="row">
+      <button onclick="copiar()">Copiar bloque</button>
+    </div>
+  </div>
 
-    const inEl = $("in");
-    const outEl = $("out");
-    const descEl = $("desc");
-    const badgeEl = $("tipoBadge");
-    const ampEl = $("amp");
-    const histEl = $("hist");
-    const toastEl = $("toast");
+  <!-- PREVIEW -->
+  <div class="card">
+    <label><b>Preview (opcional)</b></label>
+    <iframe id="preview"></iframe>
+    <div class="hint">
+      Así se verá dentro de LIQ.
+    </div>
+  </div>
 
-    // Preview refs
-    const previewWrapEl = $("previewWrap");
-    const previewEl = $("preview");
-    const pstatusEl = $("pstatus");
+</div>
 
-    const STORAGE_KEY = "liq_link_history_v1";
+<div class="toast" id="toast">Código copiado ✅</div>
 
-    function showToast(msg){
-      toastEl.textContent = msg;
-      toastEl.classList.add("show");
-      setTimeout(()=>toastEl.classList.remove("show"), 1200);
-    }
+<script>
+function generar(){
+  const url = document.getElementById("input").value.trim();
+  const badge = document.getElementById("badge");
+  const out = document.getElementById("output");
+  const preview = document.getElementById("preview");
 
-    function normalizeAmp(s){
-      return ampEl.checked ? s.replace(/&/g, "&amp;") : s;
-    }
+  let snippet = "";
+  let previewSrc = "";
 
-    function detectAndConvert(raw){
-      const url = (raw || "").trim();
-      if (!url) return { ok:false, type:"", label:"", desc:"Pega un link para detectarlo.", result:"" };
+  // PDF
+  if(url.includes("drive.google.com/file/d/")){
+    const id = url.match(/file\/d\/([^\/\?]+)/)?.[1];
+    if(!id) return error();
+    previewSrc = `https://drive.google.com/file/d/${id}/preview`;
 
-      // 1) FORMS
-      if (/docs\.google\.com\/forms\/d\/e\//.test(url) && /\/viewform/.test(url)) {
-        const base = url.replace(/(\/viewform).*/,"$1");
-        const result = base + "?embedded=true";
-        return {
-          ok:true,
-          type:"forms",
-          label:"FORMULARIO (Google Forms)",
-          desc:"Se recorta a /viewform y se agrega ?embedded=true para LIQ.",
-          result
-        };
-      }
+    snippet = `
+<h2 style="margin:0 0 12px;text-align:center;font-size:clamp(24px,3vw,34px);">Temario</h2>
+<div style="position:relative;height:80vh;min-height:520px;overflow:hidden;">
+  <iframe
+    src="${previewSrc}"
+    style="position:absolute;top:-56px;left:0;width:100%;height:calc(100% + 56px);border:0;"
+    allow="fullscreen">
+  </iframe>
+</div>`.trim();
 
-      // 2) PRESENTATION / SLIDES
-      if (/docs\.google\.com\/presentation\/d\//.test(url)) {
-        const m = url.match(/docs\.google\.com\/presentation\/d\/([^\/\?]+)/);
-        if (m && m[1]) {
-          const id = m[1];
-          const result = `https://docs.google.com/presentation/d/${id}/embed?start=false&loop=false&delayms=3000`;
-          return {
-            ok:true,
-            type:"slides",
-            label:"PRESENTACIÓN (Google Slides)",
-            desc:"Se toma el ID y se genera el /embed con parámetros para mostrar en LIQ.",
-            result
-          };
-        }
-      }
+    badge.textContent = "PDF (Google Drive)";
+    badge.className = "badge ok";
+  }
 
-      // 3) DRIVE PDF
-      if (/drive\.google\.com\/file\/d\//.test(url)) {
-        const m = url.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
-        if (m && m[1]) {
-          const id = m[1];
-          const result = `https://drive.google.com/file/d/${id}/preview`;
-          return {
-            ok:true,
-            type:"pdf",
-            label:"PDF (Google Drive)",
-            desc:"Se toma el ID del archivo y se reemplaza por /preview para LIQ.",
-            result
-          };
-        }
-      }
+  // SLIDES
+  else if(url.includes("docs.google.com/presentation/d/")){
+    const id = url.match(/presentation\/d\/([^\/\?]+)/)?.[1];
+    if(!id) return error();
+    previewSrc = `https://docs.google.com/presentation/d/${id}/embed?start=false&loop=false&delayms=3000`;
 
-      return {
-        ok:false,
-        type:"unknown",
-        label:"NO RECONOCIDO",
-        desc:"No pude identificar el link. Debe ser Forms (viewform), Presentación (presentation/d/ID) o PDF Drive (file/d/ID).",
-        result:""
-      };
-    }
+    snippet = `
+<h1 style="margin:0 0 12px;text-align:center;font-size:clamp(28px,4vw,40px);">Temario de la lección</h1>
+<div style="position:relative;padding-top:56.25%;height:0;overflow:hidden;">
+  <iframe
+    src="${previewSrc.replace(/&/g,"&amp;")}"
+    style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
+    frameborder="0"
+    allowfullscreen="allowfullscreen">
+  </iframe>
+</div>`.trim();
 
-    function setBadge(state){
-      badgeEl.className = "badge " + (state.ok ? "ok" : "bad");
-      badgeEl.innerHTML = `<span class="dot"></span> ${state.ok ? state.label : "No reconocido"}`;
-      if(!state.ok){
-        badgeEl.classList.remove("ok");
-        badgeEl.classList.add("bad");
-      }
-    }
+    badge.textContent = "PRESENTACIÓN (Google Slides)";
+    badge.className = "badge ok";
+  }
 
-    function loadHistory(){
-      try{
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      }catch(e){
-        return [];
-      }
-    }
+  // FORMS
+  else if(url.includes("docs.google.com/forms") && url.includes("/viewform")){
+    const base = url.replace(/(\/viewform).*/,"$1");
+    previewSrc = `${base}?embedded=true`;
 
-    function saveHistory(items){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    }
+    snippet = `
+<div style="position:relative;padding-bottom:150%;height:0;overflow:hidden;">
+  <iframe
+    src="${previewSrc}"
+    style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+    frameborder="0"
+    marginheight="0"
+    marginwidth="0">
+    Cargando…
+  </iframe>
+</div>`.trim();
 
-    function renderHistory(){
-      const items = loadHistory();
-      histEl.innerHTML = "";
+    badge.textContent = "FORMULARIO (Google Forms)";
+    badge.className = "badge ok";
+  }
 
-      if(items.length === 0){
-        histEl.innerHTML = `<div class="hint">Aún no hay elementos. Genera uno para que aparezca aquí.</div>`;
-        return;
-      }
+  else{
+    return error();
+  }
 
-      for(const item of items){
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <div class="itemTop">
-            <div class="row">
-              <div class="badge ok" style="font-size:12px;padding:6px 10px"><span class="dot"></span> ${item.label}</div>
-              <div class="mini">${new Date(item.ts).toLocaleString()}</div>
-            </div>
-            <div class="row">
-              <button class="btn secondary small" data-copy="link">Copiar link</button>
-              <button class="btn secondary small" data-copy="iframe">Copiar iframe</button>
-              <button class="btn secondary small" data-copy="preview">Preview</button>
-            </div>
-          </div>
-          <div class="code">${item.result}</div>
-        `;
+  out.value = snippet;
+  preview.src = previewSrc;
+}
 
-        div.querySelector('[data-copy="link"]').onclick = async ()=>{
-          await navigator.clipboard.writeText(item.result);
-          showToast("Link copiado ✅");
-        };
-        div.querySelector('[data-copy="iframe"]').onclick = async ()=>{
-          const iframe = `<iframe src="${item.result.replace(/&/g,"&amp;")}" width="100%" height="600" frameborder="0" allowfullscreen></iframe>`;
-          await navigator.clipboard.writeText(iframe);
-          showToast("Iframe copiado ✅");
-        };
-        div.querySelector('[data-copy="preview"]').onclick = ()=>{
-          // Previsualiza usando el resultado almacenado
-          openPreview(item.result.replace(/&amp;/g, "&"));
-        };
+function copiar(){
+  const out = document.getElementById("output");
+  if(!out.value || out.value === "—") return;
+  navigator.clipboard.writeText(out.value);
+  const t = document.getElementById("toast");
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1200);
+}
 
-        histEl.appendChild(div);
-      }
-    }
+function limpiar(){
+  document.getElementById("input").value = "";
+  document.getElementById("output").value = "—";
+  document.getElementById("preview").src = "";
+  const badge = document.getElementById("badge");
+  badge.textContent = "Sin detectar";
+  badge.className = "badge";
+}
 
-    function addToHistory(entry){
-      const items = loadHistory();
-      // evita duplicados seguidos
-      if(items[0]?.result === entry.result && items[0]?.label === entry.label) return;
-      items.unshift(entry);
-      // limita historial
-      if(items.length > 30) items.pop();
-      saveHistory(items);
-      renderHistory();
-    }
+function error(){
+  const badge = document.getElementById("badge");
+  badge.textContent = "LINK NO VÁLIDO";
+  badge.className = "badge bad";
+}
+</script>
 
-    function openPreview(link){
-      if(!link || link === "—") return;
-
-      previewWrapEl.style.display = "block";
-      pstatusEl.className = "status warn";
-      pstatusEl.textContent = "Cargando…";
-
-      // Para evitar que se quede con caché raro, recargamos forzando src
-      previewEl.onload = () => {
-        pstatusEl.className = "status ok";
-        pstatusEl.textContent = "Cargado ✅";
-      };
-
-      previewEl.src = link;
-      // Scroll suave a preview
-      previewWrapEl.scrollIntoView({behavior:"smooth", block:"nearest"});
-    }
-
-    function closePreview(){
-      previewEl.src = "";
-      previewWrapEl.style.display = "none";
-      pstatusEl.className = "status warn";
-      pstatusEl.textContent = "Cargando…";
-    }
-
-    function generar(){
-      const state = detectAndConvert(inEl.value);
-      setBadge(state);
-      descEl.textContent = state.desc;
-
-      if(!state.ok){
-        outEl.textContent = "—";
-        closePreview();
-        return;
-      }
-
-      const finalLink = normalizeAmp(state.result);
-      outEl.textContent = finalLink;
-
-      addToHistory({
-        ts: Date.now(),
-        label: state.label,
-        result: finalLink
-      });
-
-      // preview usa URL real (no &amp;)
-      openPreview(state.result);
-    }
-
-    $("btnGenerar").onclick = generar;
-
-    $("btnCopiar").onclick = async ()=>{
-      const txt = outEl.textContent.trim();
-      if(!txt || txt === "—") return showToast("No hay resultado para copiar");
-      await navigator.clipboard.writeText(txt);
-      showToast("Link copiado ✅");
-    };
-
-    $("btnCopiarIframe").onclick = async ()=>{
-      const link = outEl.textContent.trim();
-      if(!link || link === "—") return showToast("No hay resultado para copiar");
-      // En iframe debe ir &amp;
-      const iframe = `<iframe src="${link.replace(/&/g,"&amp;")}" width="100%" height="600" frameborder="0" allowfullscreen></iframe>`;
-      await navigator.clipboard.writeText(iframe);
-      showToast("Iframe copiado ✅");
-    };
-
-    $("btnAbrir").onclick = ()=>{
-      const link = outEl.textContent.trim();
-      if(!link || link === "—") return showToast("No hay link");
-      // Abre el link real (si viene con &amp;, lo normalizamos)
-      window.open(link.replace(/&amp;/g, "&"), "_blank");
-    };
-
-    $("btnRecargar").onclick = ()=>{
-      const current = previewEl.src;
-      if(!current) return;
-      pstatusEl.className = "status warn";
-      pstatusEl.textContent = "Recargando…";
-      previewEl.src = ""; // reset
-      setTimeout(()=> previewEl.src = current, 50);
-    };
-
-    $("btnCerrarPreview").onclick = closePreview;
-
-    $("btnLimpiar").onclick = ()=>{
-      inEl.value = "";
-      outEl.textContent = "—";
-      descEl.textContent = "Pega un link para detectarlo.";
-      badgeEl.className = "badge warn";
-      badgeEl.innerHTML = `<span class="dot"></span> Sin detectar`;
-      closePreview();
-      inEl.focus();
-    };
-
-    $("btnBorrarHist").onclick = ()=>{
-      localStorage.removeItem(STORAGE_KEY);
-      renderHistory();
-      showToast("Historial borrado");
-    };
-
-    $("btnEjemplos").onclick = ()=>{
-      const ejemplos = [
-        "https://docs.google.com/forms/d/e/1FAIpQLSd5Vin4eirrO4nldGx7fa2MVUNVN2NTNlxa2dF5UbHsG24TuA/viewform?usp=header",
-        "https://docs.google.com/presentation/d/1hCghfhuYw02LojXMUEXU1cZRfToFTB48/edit?usp=sharing&ouid=102921009120773020155&rtpof=true&sd=true",
-        "https://drive.google.com/file/d/1IaOgl5KTizIzqVx_1MrE3UONIykIlDKy/view?usp=sharing"
-      ];
-      inEl.value = ejemplos[Math.floor(Math.random()*ejemplos.length)];
-      generar();
-    };
-
-    // Autodetectar mientras pega (suave)
-    let t = null;
-    inEl.addEventListener("input", ()=>{
-      clearTimeout(t);
-      t = setTimeout(()=>{
-        const state = detectAndConvert(inEl.value);
-        // solo actualiza el badge/desc sin guardar historial hasta que presione "Generar"
-        badgeEl.className = "badge " + (state.ok ? "ok" : "warn");
-        badgeEl.innerHTML = `<span class="dot"></span> ${state.ok ? state.label : "Sin detectar"}`;
-        descEl.textContent = state.desc;
-      }, 200);
-    });
-
-    renderHistory();
-  </script>
 </body>
 </html>
+
